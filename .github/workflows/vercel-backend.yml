@@ -6,7 +6,17 @@ on:
       - main
 
 jobs:
+  integration_test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check backend health
+        run: |
+          echo "Checking ssms-backend /api/health..."
+          curl --fail --silent --show-error https://ssms-backend.vercel.app/api/health | grep '"status":"ok"'
+
   deploy:
+    needs: [integration_test]
     runs-on: ubuntu-latest
 
     steps:
