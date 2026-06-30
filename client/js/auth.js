@@ -1,5 +1,15 @@
-const API = '/api';
+const API = window.API_URL || '/api';
 const message = document.getElementById('authMessage');
+
+const parseResponse = async (response) => {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text }; 
+  }
+};
 
 const showMessage = (text, isError = false) => {
   message.textContent = text;
@@ -26,8 +36,8 @@ document.getElementById('loginForm').addEventListener('submit', async (event) =>
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(toObject(event.currentTarget))
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message);
+    const data = await parseResponse(response);
+    if (!response.ok) throw new Error(data.message || `Request failed (${response.status})`);
     localStorage.setItem('ssms_token', data.token);
     localStorage.setItem('ssms_user', JSON.stringify(data.user));
     window.location.href = 'dashboard.html';
@@ -44,8 +54,8 @@ document.getElementById('registerForm').addEventListener('submit', async (event)
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(toObject(event.currentTarget))
     });
-    const data = await response.json();
-    if (!response.ok) throw new Error(data.message);
+    const data = await parseResponse(response);
+    if (!response.ok) throw new Error(data.message || `Request failed (${response.status})`);
     showMessage('Account created. You can open the dashboard now.');
     localStorage.setItem('ssms_token', data.token);
     localStorage.setItem('ssms_user', JSON.stringify(data.user));
@@ -62,6 +72,6 @@ document.getElementById('forgotForm').addEventListener('submit', async (event) =
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(toObject(event.currentTarget))
   });
-  const data = await response.json();
-  showMessage(data.message);
+  const data = await parseResponse(response);
+  showMessage(data.message || 'Request completed.');
 });

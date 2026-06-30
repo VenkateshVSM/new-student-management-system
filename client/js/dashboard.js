@@ -1,3 +1,4 @@
+const API = window.API_URL || '/api';
 const token = localStorage.getItem('ssms_token');
 const user = JSON.parse(localStorage.getItem('ssms_user') || 'null');
 
@@ -17,13 +18,23 @@ const toast = (message) => {
   setTimeout(() => element.classList.remove('show'), 2600);
 };
 
+const parseResponse = async (response) => {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text);
+  } catch {
+    return { message: text };
+  }
+};
+
 const api = async (path, options = {}) => {
-  const response = await fetch(`/api${path}`, {
+  const response = await fetch(`${API}${path}`, {
     ...options,
     headers: { ...headers, ...(options.headers || {}) }
   });
-  const data = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(data.message || 'Request failed.');
+  const data = await parseResponse(response);
+  if (!response.ok) throw new Error(data.message || `Request failed (${response.status})`);
   return data;
 };
 
@@ -388,7 +399,7 @@ document.getElementById('logoutBtn').addEventListener('click', () => {
 });
 
 document.getElementById('exportStudents').addEventListener('click', async () => {
-  const response = await fetch('/api/reports/export/students', {
+  const response = await fetch(`${API}/reports/export/students`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   if (!response.ok) return toast('Export failed');

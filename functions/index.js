@@ -1,9 +1,4 @@
-const { onRequest } = require("firebase-functions/v2/https");
+const functions = require('firebase-functions');
+const app = require('../server/app');
 
-// Import Express app from the copied server folder
-
-const app = require("./server/app");
-
-// Export Cloud Function
-
-exports.api = onRequest(app);
+exports.app = functions.https.onRequest(app);

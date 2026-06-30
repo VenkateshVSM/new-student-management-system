@@ -41,6 +41,28 @@ Student-Management-System/
 └── README.md
 ```
 
+## Firebase + GitHub Deployment
+
+This repository is configured to deploy the static frontend to Firebase Hosting via GitHub Actions.
+
+- Frontend source: `client/`
+- Hosting config: `firebase.json`
+- GitHub action: `.github/workflows/firebase-hosting.yml`
+- Firebase project: `student-205d0`
+
+### What to do
+
+1. Push the repository to GitHub.
+2. Create a Firebase service account JSON for your project.
+3. Add the JSON as a GitHub secret named `FIREBASE_SERVICE_ACCOUNT`.
+4. Push to the `main` branch and GitHub Actions will deploy the site automatically.
+
+### Important
+
+- This setup deploys only the static frontend.
+- The backend API still requires a separate backend host unless you upgrade to Firebase Blaze and use Cloud Functions.
+- If you use a separate backend, set the API endpoint in `client/js/config.js` by updating `window.API_URL`.
+
 ## Setup
 
 1. Create the database:
@@ -101,5 +123,9 @@ Open `http://localhost:5000`.
 - `GET /api/reports/export/:table`
 
 ## Notes
+
+- The frontend is deployable on Firebase Hosting free plan.
+- The `/api/*` backend cannot run on Firebase static hosting alone; it requires a backend host or Firebase Functions with Blaze plan.
+- To use the app on Firebase Hosting, deploy the frontend as a static site and point `window.API_URL` to a separate backend deployment.
 
 Seed users use a plain demo password to simplify first-time setup. Accounts created through the register page are stored with bcrypt hashes.
