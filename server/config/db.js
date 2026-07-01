@@ -6,23 +6,23 @@ const { URL } = require('url');
 function buildDbConfig() {
   if (process.env.DATABASE_URL) {
     try {
-      const parsedUrl = new URL(process.env.DATABASE_URL);
+      const parsed = new URL(process.env.DATABASE_URL);
       const config = {
-        host: parsedUrl.hostname,
-        port: parsedUrl.port ? Number(parsedUrl.port) : 3306,
-        user: decodeURIComponent(parsedUrl.username),
-        password: decodeURIComponent(parsedUrl.password),
-        database: parsedUrl.pathname.replace(/^\/+/, '')
+        host: parsed.hostname,
+        port: parsed.port ? Number(parsed.port) : 3306,
+        user: decodeURIComponent(parsed.username),
+        password: decodeURIComponent(parsed.password),
+        database: parsed.pathname.replace(/^\/+/, '')
       };
 
-      const sslMode = parsedUrl.searchParams.get('sslmode');
-      if (sslMode === 'require' || sslMode === 'verify-ca' || sslMode === 'verify-full') {
+      const sslmode = parsed.searchParams.get('sslmode');
+      if (sslmode === 'require' || sslmode === 'verify-ca' || sslmode === 'verify-full') {
         config.ssl = { rejectUnauthorized: false };
       }
 
       return config;
     } catch (error) {
-      console.warn('Unable to parse DATABASE_URL, falling back to DB_* env vars.', error.message);
+      console.warn('DATABASE_URL parse failed, falling back to DB_* values:', error.message);
     }
   }
 
